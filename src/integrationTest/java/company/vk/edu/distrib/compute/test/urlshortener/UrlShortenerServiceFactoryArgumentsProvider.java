@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import company.vk.edu.distrib.compute.AbstractHttpServiceFactory;
+import company.vk.edu.distrib.compute.robert.urlshortener.RobertHttpServiceFactory;
 import company.vk.edu.distrib.compute.rsmt98.urlshortener.UrlShortenerServiceFactory;
 import company.vk.edu.distrib.compute.urlshortener.UrlShortenerService;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -17,7 +18,8 @@ public class UrlShortenerServiceFactoryArgumentsProvider implements ArgumentsPro
 
     private final Collection<Class<? extends AbstractHttpServiceFactory<? extends UrlShortenerService>>> factories =
         List.of(
-            UrlShortenerServiceFactory.class
+            UrlShortenerServiceFactory.class,
+            RobertHttpServiceFactory.class
         );
 
     @Override
