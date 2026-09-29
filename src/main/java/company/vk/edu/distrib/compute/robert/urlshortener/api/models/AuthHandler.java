@@ -15,6 +15,7 @@ public class AuthHandler extends Handler {
     private static final String AUTHORIZATION = "authorization";
     private static final String BASIC = "basic";
     private static final Decoder DECODER = Base64.getDecoder();
+    private static final int CREDENTIALS_PARTS_COUNT = 2;
     
     private final HttpHandler innerHandler;
     private final Dao<String> userDao;
@@ -40,7 +41,7 @@ public class AuthHandler extends Handler {
             } 
 
             var list = auth.getFirst().split(" ");
-            if (list.length != 2 || !BASIC.equalsIgnoreCase(list[0].strip())) {
+            if (list.length != CREDENTIALS_PARTS_COUNT || !BASIC.equalsIgnoreCase(list[0].strip())) {
                 sendUnauthorized(exchange);
                 return;
             }

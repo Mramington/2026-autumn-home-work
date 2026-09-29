@@ -35,7 +35,6 @@ public class RobertUrlShortenerService implements UrlShortenerService {
     
     public RobertUrlShortenerService(int initPort) throws IOException {
         port = initPort;
-        httpServer = null;
 
         Path storageRoot = Path.of(
             System.getProperty("java.io.tmpdir"),
@@ -51,25 +50,21 @@ public class RobertUrlShortenerService implements UrlShortenerService {
     }
 
     private void initServer() throws IOException {
-        if (httpServer == null) {
-            httpServer = HttpServer.create();
+        httpServer = HttpServer.create();
 
-            httpServer.createContext(ForwardHandler.PATH, new ForwardHandler(linksDao));
-            httpServer.createContext(LinksHandler.PATH, new AuthHandler(new LinksHandler(linksDao, port), usersDao));
-            httpServer.createContext(StatusHandler.PATH, new StatusHandler());
-            httpServer.createContext(InternalUserHandler.PATH, new InternalUserHandler(usersDao));
-            httpServer.createContext(
-                LinksForwardHandler.PATH, 
-                new AuthHandler(
-                    new LinksForwardHandler(linksDao),
-                    usersDao
-                )
-            );
-            
-            log.atDebug().log("Created unbound HTTP server");
-        } else {
-            log.atDebug().log("HTTP server is already initialized");
-        }
+        httpServer.createContext(ForwardHandler.PATH, new ForwardHandler(linksDao));
+        httpServer.createContext(LinksHandler.PATH, new AuthHandler(new LinksHandler(linksDao, port), usersDao));
+        httpServer.createContext(StatusHandler.PATH, new StatusHandler());
+        httpServer.createContext(InternalUserHandler.PATH, new InternalUserHandler(usersDao));
+        httpServer.createContext(
+            LinksForwardHandler.PATH, 
+            new AuthHandler(
+                new LinksForwardHandler(linksDao),
+                usersDao
+            )
+        );
+        
+        log.atDebug().log("Created unbound HTTP server");
     }
 
     @Override
@@ -89,7 +84,7 @@ public class RobertUrlShortenerService implements UrlShortenerService {
                 throw new UncheckedIOException(e);
             }
         } else {
-            throw new RuntimeException();
+            throw new IllegalStateException("HTTP server has already been started");
         }
     }
 
