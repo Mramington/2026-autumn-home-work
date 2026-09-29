@@ -59,11 +59,13 @@ public class AuthHandler extends Handler {
                 .setStatus(HttpStatus.SERVICE_UNAVAILABLE.code())
                 .build();
             sendResponse(exchange, response);
+            return;
         } catch (Exception e) {
             Response response = Response.builder()
                 .setStatus(HttpStatus.UNAUTHORIZED.code())
                 .build();
             sendResponse(exchange, response);
+            return;
         }
 
         innerHandler.handle(exchange);

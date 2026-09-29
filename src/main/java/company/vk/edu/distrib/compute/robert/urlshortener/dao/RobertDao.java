@@ -34,15 +34,17 @@ public class RobertDao implements Dao<String> {
         inputValidor.validateKey(key);
 
         lock.lock();
-
-        Path file = key2file(key);
-        if (!Files.exists(file)) { 
-            throw new NoSuchElementException(); 
+        String value;
+        try {
+            Path file = key2file(key);
+            if (!Files.exists(file)) { 
+                throw new NoSuchElementException(); 
+            }
+            value = Files.readString(file);
+        } finally {
+            lock.unlock();
         }
-        String value = Files.readString(file);
-
-        lock.unlock();
-
+        
         return value; 
     }
 
@@ -51,15 +53,16 @@ public class RobertDao implements Dao<String> {
         inputValidor.validateValue(value);
         
         lock.lock();
-
-        Path file = key2file(key);
-        if (Files.exists(file)) {
-            return false; 
+        try {
+            Path file = key2file(key);
+            if (Files.exists(file)) {
+                return false; 
+            }
+            Files.writeString(file, value, StandardCharsets.UTF_8);
+        } finally {
+            lock.unlock();
         }
-        Files.writeString(file, value, StandardCharsets.UTF_8);
-
-        lock.unlock();
-
+        
         return true;
     }
 
@@ -68,14 +71,15 @@ public class RobertDao implements Dao<String> {
         inputValidor.validateValue(value);
         
         lock.lock();
-
-        Path file = key2file(key);
-        if (!Files.exists(file)) {
-            throw new NoSuchElementException();
-        } 
-        Files.writeString(key2file(key), value, StandardCharsets.UTF_8);
-        
-        lock.unlock();
+        try {
+            Path file = key2file(key);
+            if (!Files.exists(file)) {
+                throw new NoSuchElementException();
+            } 
+            Files.writeString(key2file(key), value, StandardCharsets.UTF_8);    
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
@@ -84,10 +88,11 @@ public class RobertDao implements Dao<String> {
         inputValidor.validateValue(value);
 
         lock.lock();
-
-        Files.writeString(key2file(key), value, StandardCharsets.UTF_8);
-        
-        lock.unlock();
+        try {
+            Files.writeString(key2file(key), value, StandardCharsets.UTF_8);
+        } finally {
+           lock.unlock();
+        }    
     }
 
     @Override
@@ -95,10 +100,11 @@ public class RobertDao implements Dao<String> {
         inputValidor.validateKey(key);
         
         lock.lock();
-
-        Files.deleteIfExists(key2file(key));
-
-        lock.unlock();
+        try {
+            Files.deleteIfExists(key2file(key));
+        } finally {
+            lock.unlock();        
+        }
     }
 
     private Path key2file(String key) throws InvalidPathException {
