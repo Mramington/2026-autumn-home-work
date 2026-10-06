@@ -1,4 +1,4 @@
-package company.vk.edu.distrib.compute.robert.urlshortener.dao;
+package company.vk.edu.distrib.compute.robert.dao;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +9,8 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.locks.ReentrantLock;
 
 import company.vk.edu.distrib.compute.Dao;
-import company.vk.edu.distrib.compute.robert.urlshortener.validation.InputValidator;
+import company.vk.edu.distrib.compute.robert.validation.InputValidator;
+
 
 public class RobertDao implements Dao<String> {
     private final ReentrantLock lock;

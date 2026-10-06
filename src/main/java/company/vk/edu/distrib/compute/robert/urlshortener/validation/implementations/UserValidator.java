@@ -1,6 +1,6 @@
 package company.vk.edu.distrib.compute.robert.urlshortener.validation.implementations;
 
-import company.vk.edu.distrib.compute.robert.urlshortener.validation.InputValidator;
+import company.vk.edu.distrib.compute.robert.validation.InputValidator;
 
 public class UserValidator implements InputValidator {
     @Override 

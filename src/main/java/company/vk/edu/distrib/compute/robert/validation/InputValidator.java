@@ -1,4 +1,4 @@
-package company.vk.edu.distrib.compute.robert.urlshortener.validation;
+package company.vk.edu.distrib.compute.robert.validation;
 
 public interface InputValidator {
     void validateKey(String key);
