@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,7 +17,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class PersistentUrlShortenerService implements UrlShortenerService {
-    private static final Path DATA_DIR = Path.of("data");
+    private static final Path DATA_DIR;
+
+    static {
+        try {
+            DATA_DIR = Files.createTempDirectory("rsmt98");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final int port;
     private final Lock lock = new ReentrantLock();
     private boolean startCalled;
