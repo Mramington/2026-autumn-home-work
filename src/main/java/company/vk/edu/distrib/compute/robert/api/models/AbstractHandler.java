@@ -22,6 +22,10 @@ public abstract class AbstractHandler extends Handler {
                         .setStatus(HttpStatus.METHOD_NOT_ALLOWED.code())
                         .build();
             };
+        } catch (BadRequestException e) {
+            response = Response.builder()
+                .setStatus(HttpStatus.BAD_REQUEST.code())
+                .build();
         } catch (IllegalArgumentException e) {
             response = Response.builder()
                 .setStatus(HttpStatus.UNPROCESSABLE_CONTENT.code())

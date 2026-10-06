@@ -2,7 +2,7 @@ package company.vk.edu.distrib.compute.robert.urlshortener.validation.implementa
 
 import company.vk.edu.distrib.compute.robert.validation.InputValidator;
 
-public class UrlValidator implements InputValidator {
+public class UrlValidator implements InputValidator<String> {
     @Override 
     public void validateKey(String key) {
         if (key == null

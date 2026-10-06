@@ -2,20 +2,20 @@ package company.vk.edu.distrib.compute.robert.urlshortener.api.v0;
 
 import java.io.IOException;
 
+import company.vk.edu.distrib.compute.Dao;
 import company.vk.edu.distrib.compute.robert.api.models.AbstractHandler;
 import company.vk.edu.distrib.compute.robert.api.models.HttpStatus;
 import company.vk.edu.distrib.compute.robert.api.models.Request;
 import company.vk.edu.distrib.compute.robert.api.models.Response;
-import company.vk.edu.distrib.compute.robert.dao.RobertDao;
 
 // * Во всех случаях, когда передаётся либо не валидный `<ID>` либо невалидная ссылка в теле запроса (POST/PUT методы)
 // - надо вернуть `422 Unprocessable Content`
 public class ForwardHandler extends AbstractHandler {
     public static final String PATH = "/";
 
-    private final RobertDao dao;
+    private final Dao<String> dao;
 
-    public ForwardHandler(RobertDao inputDao) {
+    public ForwardHandler(Dao<String> inputDao) {
         super();
         dao = inputDao;
     }

@@ -11,14 +11,17 @@ import java.util.concurrent.locks.ReentrantLock;
 import company.vk.edu.distrib.compute.Dao;
 import company.vk.edu.distrib.compute.robert.validation.InputValidator;
 
-
 public class RobertDao implements Dao<String> {
     private final ReentrantLock lock;
 
     private final Path directory;
-    private final InputValidator inputValidor;
+    private final InputValidator<String> inputValidor;
 
-    public RobertDao(Path storageRoot, String directoryName, InputValidator initInputValidator) throws IOException {
+    public RobertDao(
+        Path storageRoot,
+        String directoryName,
+        InputValidator<String> initInputValidator
+    ) throws IOException {
         lock = new ReentrantLock();
         directory = storageRoot.resolve(directoryName);
         inputValidor = initInputValidator;

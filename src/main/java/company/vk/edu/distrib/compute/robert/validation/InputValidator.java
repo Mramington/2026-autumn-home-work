@@ -1,7 +1,7 @@
 package company.vk.edu.distrib.compute.robert.validation;
 
-public interface InputValidator {
+public interface InputValidator<T> {
     void validateKey(String key);
     
-    void validateValue(String value); 
+    void validateValue(T value);
 }
