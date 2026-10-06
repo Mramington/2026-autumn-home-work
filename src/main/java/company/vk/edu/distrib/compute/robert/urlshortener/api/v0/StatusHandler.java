@@ -1,9 +1,9 @@
 package company.vk.edu.distrib.compute.robert.urlshortener.api.v0;
 
-import company.vk.edu.distrib.compute.robert.urlshortener.api.models.AbstractHandler;
-import company.vk.edu.distrib.compute.robert.urlshortener.api.models.HttpStatus;
-import company.vk.edu.distrib.compute.robert.urlshortener.api.models.Request;
-import company.vk.edu.distrib.compute.robert.urlshortener.api.models.Response;
+import company.vk.edu.distrib.compute.robert.api.models.AbstractHandler;
+import company.vk.edu.distrib.compute.robert.api.models.HttpStatus;
+import company.vk.edu.distrib.compute.robert.api.models.Request;
+import company.vk.edu.distrib.compute.robert.api.models.Response;
 
 public class StatusHandler extends AbstractHandler {
     public static final String PATH = "/v0/status";

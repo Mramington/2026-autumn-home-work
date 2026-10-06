@@ -1,4 +1,4 @@
-package company.vk.edu.distrib.compute.robert.urlshortener.api.models;
+package company.vk.edu.distrib.compute.robert.api.models;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;

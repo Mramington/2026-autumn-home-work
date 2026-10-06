@@ -1,12 +1,12 @@
 package company.vk.edu.distrib.compute.robert.urlshortener;
 
-import company.vk.edu.distrib.compute.robert.urlshortener.api.models.AuthHandler;
+import company.vk.edu.distrib.compute.robert.api.models.AuthHandler;
+import company.vk.edu.distrib.compute.robert.dao.RobertDao;
 import company.vk.edu.distrib.compute.robert.urlshortener.api.v0.ForwardHandler;
 import company.vk.edu.distrib.compute.robert.urlshortener.api.v0.InternalUserHandler;
 import company.vk.edu.distrib.compute.robert.urlshortener.api.v0.LinksForwardHandler;
 import company.vk.edu.distrib.compute.robert.urlshortener.api.v0.LinksHandler;
 import company.vk.edu.distrib.compute.robert.urlshortener.api.v0.StatusHandler;
-import company.vk.edu.distrib.compute.robert.urlshortener.dao.RobertDao;
 import company.vk.edu.distrib.compute.robert.urlshortener.validation.implementations.UrlValidator;
 import company.vk.edu.distrib.compute.robert.urlshortener.validation.implementations.UserValidator;
 import company.vk.edu.distrib.compute.urlshortener.UrlShortenerService;

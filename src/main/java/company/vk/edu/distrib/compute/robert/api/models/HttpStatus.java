@@ -1,4 +1,4 @@
-package company.vk.edu.distrib.compute.robert.urlshortener.api.models;
+package company.vk.edu.distrib.compute.robert.api.models;
 
 public enum HttpStatus {
     OK(200),
