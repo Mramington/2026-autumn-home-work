@@ -28,7 +28,7 @@ public class InternalUserHandler extends AbstractHandler {
     // тестирования. В реальных сервисах такое делается по-другому.
     @Override
     public Response post(Request request) throws IOException {
-        Credentials creds = Credentials.from(request.body());
+        Credentials creds = Credentials.from(request.bodyAsString());
 
         dao.upsert(creds.user(), creds.password());
 

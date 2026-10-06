@@ -29,7 +29,7 @@ public class LinksHandler extends AbstractHandler {
     // Возвращает `201 Created`, `Content-Type: text/html; charset=utf-8` и короткую ссылку в теле. 
     @Override
     public Response post(Request request) throws NoSuchElementException, IOException {
-        String longLink = request.body();
+        String longLink = request.bodyAsString();
        
         boolean shouldRetry = true;
         String id = "";

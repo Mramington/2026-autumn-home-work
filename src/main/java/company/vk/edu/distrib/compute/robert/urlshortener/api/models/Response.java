@@ -1,13 +1,24 @@
 package company.vk.edu.distrib.compute.robert.urlshortener.api.models;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public record Response(
     int status,
     Map<String, String> headers,
-    String body
+    byte[] body
 ) {
+    public Response {
+        body = body.clone();
+        headers = Map.copyOf(headers);
+    }
+
+    @Override
+    public byte[] body() {
+        return body.clone();
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -15,7 +26,7 @@ public record Response(
     public static final class Builder {
         private int status;
         private final Map<String, String> headers = new ConcurrentHashMap<>();
-        private String body = "";
+        private byte[] body = new byte[0];
 
         public Builder setStatus(int value) {
             status = value;
@@ -27,8 +38,13 @@ public record Response(
             return this;
         }
 
+        public Builder setBody(byte[] value) {
+            body = value.clone();
+            return this;
+        }
+
         public Builder setBody(String value) {
-            body = value;
+            body = value.getBytes(StandardCharsets.UTF_8);
             return this;
         }
 

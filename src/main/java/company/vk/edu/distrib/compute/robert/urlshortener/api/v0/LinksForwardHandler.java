@@ -41,7 +41,7 @@ public class LinksForwardHandler extends AbstractHandler {
     @Override
     public Response put(Request request) throws NoSuchElementException, IOException {
         String id = request.path().substring(PATH.length());
-        String longLink = request.body();
+        String longLink = request.bodyAsString();
 
         dao.update(id, longLink);
       

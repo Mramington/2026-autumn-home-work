@@ -11,9 +11,23 @@ import com.sun.net.httpserver.HttpExchange;
 public record Request(
     String method,
     String path,
-    String body,
+    byte[] body,
     Map<String, String> headers
 ) {
+    public Request {
+        body = body.clone();
+        headers = Map.copyOf(headers);
+    }
+
+    @Override
+    public byte[] body() {
+        return body.clone();
+    }
+
+    public String bodyAsString() {
+        return new String(body, StandardCharsets.UTF_8);
+    }
+
     public static Request from(HttpExchange exchange) throws IOException {
         Map<String, String> headers = new ConcurrentHashMap<>();
         exchange.getRequestHeaders().forEach(
@@ -25,10 +39,7 @@ public record Request(
         return new Request(
             exchange.getRequestMethod(),
             exchange.getRequestURI().getRawPath(),
-            new String(
-                exchange.getRequestBody().readAllBytes(),
-                StandardCharsets.UTF_8    
-            ),
+            exchange.getRequestBody().readAllBytes(),
             headers
         );
     }
