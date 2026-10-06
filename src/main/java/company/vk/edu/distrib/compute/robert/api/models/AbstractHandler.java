@@ -11,17 +11,7 @@ public abstract class AbstractHandler extends Handler {
     public void handle(HttpExchange exchange) throws IOException {
         Response response;
         try {
-            Request request = Request.from(exchange);
-
-            response = switch (request.method()) {
-                case "GET" -> get(request);
-                case "POST" -> post(request);
-                case "PUT" -> put(request);
-                case "DELETE" -> delete(request);
-                default -> Response.builder()
-                        .setStatus(HttpStatus.METHOD_NOT_ALLOWED.code())
-                        .build();
-            };
+            response = handleRequest(Request.from(exchange));
         } catch (BadRequestException e) {
             response = Response.builder()
                 .setStatus(HttpStatus.BAD_REQUEST.code())
@@ -41,7 +31,19 @@ public abstract class AbstractHandler extends Handler {
         }
 
         sendResponse(exchange, response);
-    }    
+    }
+
+    private Response handleRequest(Request request) throws IOException {
+        return switch (request.method()) {
+            case "GET" -> get(request);
+            case "POST" -> post(request);
+            case "PUT" -> put(request);
+            case "DELETE" -> delete(request);
+            default -> Response.builder()
+                .setStatus(HttpStatus.METHOD_NOT_ALLOWED.code())
+                .build();
+        };
+    }
 
     public Response get(Request request) throws IOException {
         return Response.builder()

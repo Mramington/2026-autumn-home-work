@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -21,10 +22,12 @@ import org.slf4j.LoggerFactory;
 
 public class RobertKVService implements KVService {
     private static final Logger log = LoggerFactory.getLogger(RobertKVService.class);
+    private static final int MIN_EXECUTOR_THREADS = 1;
 
     private final int port;
     private final Dao<byte[]> dao;
     private final HttpServer httpServer;
+    private final ReentrantLock lock = new ReentrantLock();
     private ServiceState state = ServiceState.NEW;
     private final ExecutorService executor;
 
@@ -42,7 +45,7 @@ public class RobertKVService implements KVService {
         String value = System.getenv().getOrDefault("KV_EXECUTOR_THREADS", "1");
         int executorThreads = Integer.parseInt(value);
 
-        if (executorThreads < 1) {
+        if (executorThreads < MIN_EXECUTOR_THREADS) {
             throw new IllegalArgumentException();
         }
 
@@ -58,38 +61,48 @@ public class RobertKVService implements KVService {
     }
 
     @Override
-    public synchronized void start() {
-        if (state != ServiceState.NEW) {
-            throw new IllegalStateException();
-        }
-
-        state = ServiceState.STARTED;
-        initContexts();
+    public void start() {
+        lock.lock();
         try {
-            httpServer.bind(
-                new InetSocketAddress(InetAddress.getLoopbackAddress(), port),
-                0
-            );
-            httpServer.start();
-            log.atInfo().log("KV service started on {}", httpServer.getAddress());
-        } catch (IOException e) {
-            state = ServiceState.STOPPED;
-            executor.shutdown();
-            throw new UncheckedIOException(e);
+            if (state != ServiceState.NEW) {
+                throw new IllegalStateException();
+            }
+
+            state = ServiceState.STARTED;
+            initContexts();
+            try {
+                httpServer.bind(
+                    new InetSocketAddress(InetAddress.getLoopbackAddress(), port),
+                    0
+                );
+                httpServer.start();
+                log.atInfo().log("KV service started on {}", httpServer.getAddress());
+            } catch (IOException e) {
+                state = ServiceState.STOPPED;
+                executor.shutdown();
+                throw new UncheckedIOException(e);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
     @Override
-    public synchronized void stop() {
-        if (state != ServiceState.STARTED) {
-            throw new IllegalStateException();
-        }
+    public void stop() {
+        lock.lock();
+        try {
+            if (state != ServiceState.STARTED) {
+                throw new IllegalStateException();
+            }
 
-        httpServer.stop(1);
-        executor.shutdown();
-        state = ServiceState.STOPPED;
-        closeDao();
-        log.atInfo().log("KV service stopped");
+            httpServer.stop(1);
+            executor.shutdown();
+            state = ServiceState.STOPPED;
+            closeDao();
+            log.atInfo().log("KV service stopped");
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void closeDao() {

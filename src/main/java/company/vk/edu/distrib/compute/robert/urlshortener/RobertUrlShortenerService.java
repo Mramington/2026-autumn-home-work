@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -29,6 +30,7 @@ public class RobertUrlShortenerService implements UrlShortenerService {
     private final int port;
     private final RobertDao usersDao;
     private final HttpServer httpServer;
+    private final ReentrantLock lock = new ReentrantLock();
 
     private Dao<String> linksDao;
     private ServiceState state = ServiceState.NEW;
@@ -65,47 +67,62 @@ public class RobertUrlShortenerService implements UrlShortenerService {
     }
 
     @Override
-    public synchronized void setLinksDao(Dao<String> dao) {
-        if (state != ServiceState.NEW) {
-            throw new IllegalStateException();
-        }
-        linksDao = Objects.requireNonNull(dao);
-    }
-
-    @Override
-    public synchronized void start() {
-        if (state != ServiceState.NEW) {
-            throw new IllegalStateException();
-        }
-
-        state = ServiceState.STARTED;
-        initContexts();
+    public void setLinksDao(Dao<String> dao) {
+        lock.lock();
         try {
-            httpServer.bind(
-                new InetSocketAddress(
-                    InetAddress.getLoopbackAddress(),
-                    port
-                ),
-                0
-            );
-            httpServer.start();
-            log.atInfo().log("Service started on {}", httpServer.getAddress());
-        } catch (IOException e) {
-            state = ServiceState.STOPPED;
-            throw new UncheckedIOException(e);
+            if (state != ServiceState.NEW) {
+                throw new IllegalStateException();
+            }
+            linksDao = Objects.requireNonNull(dao);
+        } finally {
+            lock.unlock();
         }
     }
 
     @Override
-    public synchronized void stop() {
-        if (state != ServiceState.STARTED) {
-            throw new IllegalStateException();
-        }
+    public void start() {
+        lock.lock();
+        try {
+            if (state != ServiceState.NEW) {
+                throw new IllegalStateException();
+            }
 
-        httpServer.stop(1);
-        state = ServiceState.STOPPED;
-        closeDaos();
-        log.atInfo().log("Service stopped");
+            state = ServiceState.STARTED;
+            initContexts();
+            try {
+                httpServer.bind(
+                    new InetSocketAddress(
+                        InetAddress.getLoopbackAddress(),
+                        port
+                    ),
+                    0
+                );
+                httpServer.start();
+                log.atInfo().log("Service started on {}", httpServer.getAddress());
+            } catch (IOException e) {
+                state = ServiceState.STOPPED;
+                throw new UncheckedIOException(e);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void stop() {
+        lock.lock();
+        try {
+            if (state != ServiceState.STARTED) {
+                throw new IllegalStateException();
+            }
+
+            httpServer.stop(1);
+            state = ServiceState.STOPPED;
+            closeDaos();
+            log.atInfo().log("Service stopped");
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void closeDaos() {
