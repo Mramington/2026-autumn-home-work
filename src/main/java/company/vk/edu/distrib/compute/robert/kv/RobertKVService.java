@@ -5,6 +5,8 @@ import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -24,6 +26,7 @@ public class RobertKVService implements KVService {
     private final Dao<byte[]> dao;
     private final HttpServer httpServer;
     private ServiceState state = ServiceState.NEW;
+    private final ExecutorService executor;
 
     public RobertKVService(int initPort) throws IOException {
         port = initPort;
@@ -35,6 +38,17 @@ public class RobertKVService implements KVService {
         );
         dao = new RobertByteDao(storageRoot, "entities", new KVValidator());
         httpServer = HttpServer.create();
+
+        String value = System.getenv().getOrDefault("KV_EXECUTOR_THREADS", "1");
+        int executorThreads = Integer.parseInt(value);
+
+        if (executorThreads < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        executor = Executors.newFixedThreadPool(executorThreads);
+        httpServer.setExecutor(executor);
+
         log.atDebug().log("Created unbound KV HTTP server");
     }
 
@@ -60,6 +74,7 @@ public class RobertKVService implements KVService {
             log.atInfo().log("KV service started on {}", httpServer.getAddress());
         } catch (IOException e) {
             state = ServiceState.STOPPED;
+            executor.shutdown();
             throw new UncheckedIOException(e);
         }
     }
@@ -71,6 +86,7 @@ public class RobertKVService implements KVService {
         }
 
         httpServer.stop(1);
+        executor.shutdown();
         state = ServiceState.STOPPED;
         closeDao();
         log.atInfo().log("KV service stopped");
