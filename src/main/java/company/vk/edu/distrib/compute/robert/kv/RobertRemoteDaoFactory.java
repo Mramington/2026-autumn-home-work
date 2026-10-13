@@ -1,6 +1,7 @@
 package company.vk.edu.distrib.compute.robert.kv;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import company.vk.edu.distrib.compute.Dao;
 import company.vk.edu.distrib.compute.kv.RemoteDaoFactory;
@@ -15,6 +16,10 @@ public class RobertRemoteDaoFactory implements RemoteDaoFactory<String> {
         if (ports.length < MIN_PORTS_COUNT) {
             throw new IllegalArgumentException();
         }
-        return new RobertRemoteDao(ports[0]);
+        return new RobertRemoteDao<>(
+            ports[0],
+            value -> value.getBytes(StandardCharsets.UTF_8),
+            bytes -> new String(bytes, StandardCharsets.UTF_8)
+        );
     }
 }
