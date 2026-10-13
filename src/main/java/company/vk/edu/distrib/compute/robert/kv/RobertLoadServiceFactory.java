@@ -13,7 +13,6 @@ public class RobertLoadServiceFactory extends AbstractHttpServiceFactory<RobertL
     private static final int DEFAULT_EXECUTOR_THREADS = 8;
     private static final int LEAST_SHARDS_COUNT_NUMBER = 1;
 
-
     @Override
     protected RobertLoadService doCreate(int port) throws IOException {
         int[] ports = getPorts(port);
