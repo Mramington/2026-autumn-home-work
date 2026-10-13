@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.function.Function;
 
 public class RendezvousShardingStrategy<T> implements ShardingStrategy<T> {
+    private static final int LEAST_SHARDS_COUNT_NUMBER = 1;
+
     private final int shardsCount;
     private final ThreadLocal<MessageDigest> digests = 
         ThreadLocal.withInitial(() -> {
@@ -22,7 +24,7 @@ public class RendezvousShardingStrategy<T> implements ShardingStrategy<T> {
     private final Function<T, byte[]> toBytes;
     
     public RendezvousShardingStrategy(int inputShardsCount, Function<T, byte[]> inputToBytes) {
-        if (inputShardsCount < 1) {
+        if (inputShardsCount < LEAST_SHARDS_COUNT_NUMBER) {
             throw new IllegalArgumentException();
         }
         

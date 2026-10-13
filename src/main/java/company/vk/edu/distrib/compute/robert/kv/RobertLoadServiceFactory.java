@@ -11,6 +11,8 @@ public class RobertLoadServiceFactory extends AbstractHttpServiceFactory<RobertL
     private static final String PORTS_ENV = "BENCH_KV_PORTS";
     private static final String THREADS_ENV = "BENCH_EXECUTOR_THREADS";
     private static final int DEFAULT_EXECUTOR_THREADS = 8;
+    private static final int LEAST_SHARDS_COUNT_NUMBER = 1;
+
 
     @Override
     protected RobertLoadService doCreate(int port) throws IOException {
@@ -65,7 +67,7 @@ public class RobertLoadServiceFactory extends AbstractHttpServiceFactory<RobertL
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e);
         }
-        if (executorThreads < 1) {
+        if (executorThreads < LEAST_SHARDS_COUNT_NUMBER) {
             throw new IllegalArgumentException();
         }
         return executorThreads;
